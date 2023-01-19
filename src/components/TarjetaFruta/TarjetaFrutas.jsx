@@ -1,5 +1,7 @@
 import React from "react";
-import "./TarjetaFruta.css";
+// import "./TarjetaFruta.css";
+import styles from './TarjetaFruta.module.css'
+
 
 class TarjetaFruta extends React.Component {
   state = {
@@ -19,13 +21,14 @@ class TarjetaFruta extends React.Component {
   };
 
   render() {
-    const tieneElementos = this.state.cantidad > 0;
     // const clases = tieneElementos ? "TarjetaFruta-activa" : "TarjetaFruta";
-    const clases = `TarjetaFruta ${
-      tieneElementos ? 'TarjetaFruta-activa' : ""
-    }`;
-    //'TarjetaFruta'
-    //'TarjetaFruta TarjetaFruta-activa'
+    // const clases = `TarjetaFruta ${
+    //   tieneElementos ? 'TarjetaFruta-activa' : ""
+    // }`;
+    const tieneElementos = this.state.cantidad > 0;
+    const claseActiva = tieneElementos ? styles['card-activa'] : "";
+    const clases = styles.card + ' ' + claseActiva;
+    
     return (
       <div className={clases}>
         <h3>{this.props.name}</h3>

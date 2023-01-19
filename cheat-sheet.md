@@ -233,11 +233,27 @@ const tieneElementos = this.state.cantidad > 0;
 :pushpin:A continuacion veremos ejemplos de clases dinamicas.
 
 ```
-const tieneElementos = this.state.cantidad > 0;
-    const clases = tieneElementos ? "TarjetaFruta-activa" : "TarjetaFruta";
-    const clases = `TarjetaFruta ${tieneElementos ? 'TarjetaFruta-activa' : ""}`;
+    // const clases = tieneElementos ? "TarjetaFruta-activa" : "TarjetaFruta";
+    // const clases = `TarjetaFruta ${
+    //   tieneElementos ? 'TarjetaFruta-activa' : ""
+    // }`;
+    const tieneElementos = this.state.cantidad > 0;
+    const claseActiva = tieneElementos ? 'TarjetaFruta-activa' : ""
+    const clases = 'TarjetaFruta' + claseActiva;
     return (
       <div className={clases}>
     )
 ```
 ###Sistemas de modulos CSS
+:point_right:Es un modulo de CSS mas fiable, ya que es casi imposible que se pisen los estilos.
+:pushpin:Hay dos formas de ejecutar el estilo, lo veremos con ejemplos.
+```
+import styles from './TarjetaFruta.module.css';
+<div className={styles.card}>
+<div className={styles['card-active']}> o tambien
+const claseActiva = tieneElementos ? styles['card-activa'] : "";
+const clases = styles.card + ' ' + claseActiva;
+<div className={clases}>
+```
+###Modularizacion de componentes en folders con ayuda de ES6.
+:point_right:Consiste en dividir en carpetas o directorios los modulos CSS y los Componentes, para tener mas limpio la estructura de trabajo.
