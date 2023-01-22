@@ -244,9 +244,11 @@ const tieneElementos = this.state.cantidad > 0;
       <div className={clases}>
     )
 ```
+
 ###Sistemas de modulos CSS
 :point_right:Es un modulo de CSS mas fiable, ya que es casi imposible que se pisen los estilos.
 :pushpin:Hay dos formas de ejecutar el estilo, lo veremos con ejemplos.
+
 ```
 import styles from './TarjetaFruta.module.css';
 <div className={styles.card}>
@@ -255,5 +257,183 @@ const claseActiva = tieneElementos ? styles['card-activa'] : "";
 const clases = styles.card + ' ' + claseActiva;
 <div className={clases}>
 ```
+
 ###Modularizacion de componentes en folders con ayuda de ES6.
 :point_right:Consiste en dividir en carpetas o directorios los modulos CSS y los Componentes, para tener mas limpio la estructura de trabajo.
+
+###Entendiendo el Object.assign(ES6)
+:pushpin:Object.assign nos ayuda a clonar un objeto o combinar las propiedades de varios objetos diferentes.
+:point_right:Si modificas una propiedad esta se quedara con el ultimo resultado encontrado.
+
+```
+const perfil = {
+  nombre: "Nacho",
+  info: {
+    direccion: "la direccion...",
+  },
+};
+
+const region = {
+  pais: "España",
+  info: {
+    coordenadas: "coordenadas...",
+  },
+};
+
+const social = {
+  social: "nachomargar",
+  nombre: "NachoMartin",
+};
+
+const resultado = Object.assign({}, perfil, region, social);
+
+resultado.info = Object.assign({}, perfil.info, region.info);
+
+console.log(resultado);
+
+```
+
+###Entendiendo el operador Spread.
+:pushpin:Se declara usando ... sin espacios, sirve para concatenar objetos con sus propiedades.
+:point_right:El orden si importa por lo que siempre tomara la ultima propiedad encontrada, se puede evitar usando un segundo operador spread.
+
+```
+const perfil = {
+  nombre: "Nacho",
+  info: {
+    direccion: "la direccion...",
+  },
+};
+
+const region = {
+  pais: "España",
+  info: {
+    coordenadas: "coordenadas...",
+  },
+};
+
+const social = {
+  social: "nachomargar",
+  nombre: "NachoMartin",
+};
+
+const resultado = {
+    ...region,
+    ...perfil,
+    ...social,
+    info: {
+        ...perfil.info,
+        ...region.info
+    }
+}
+
+console.log(resultado);
+```
+
+###Operador Spread con Arrays
+:pushpin:Es muy similar al anterior ejemplo.
+
+```
+const motosPequeñas = [
+    'honda sh',
+    'sh model',
+    'peugeot'
+]
+
+const motosGrandes = [
+    'TMAX',
+    'XADV',
+    'MT09'
+]
+
+const motos = [
+    ...motosPequeñas,
+    'yamaha',
+    motosGrandes,
+    'BMW'
+]
+
+console.log(motos);
+```
+
+###Mutando el estado de componente con una funcion.
+:point_right: Para actualizar el estado de la forma del ejemplo no es recomendable cuando tenemos que acceder a propiedades dentro del propio estado.
+:pushpin: El metodo setState es asincrono, cuando ejectuamos el state este internamente no se ejecuta hasta pasado un tiempo para validar si mas componente mutaron el estado y actualizar el estado al mismo tiempo con las diferentes actualizaciones. y se ejecuta un cola donde se van agrupando las diferentes mutaciones.
+:point_right: Para corregir esta incidencia al this.setState le pasamos una funcion Arrow con los parametros prevState y props.
+
+```
+import React, { Component } from "react";
+
+class Contador extends Component {
+  state = {
+    clicks: 0,
+  };
+
+  add = () => {
+    this.setState((state) => ({
+      // if (state.clicks === 3) {
+      //     return null
+      // }
+
+      clicks: state.clicks + 1,
+    }));
+  };
+
+  render() {
+    return <button onClick={this.add}>Clicks: ( {this.state.clicks} )</button>;
+  }
+}
+
+function App() {
+  return (
+    <div>
+      <Contador />
+    </div>
+  );
+}
+
+export default App;
+```
+
+:pushpin: Otro ejemplo actualizando y conservando (con el operador ...) el estado del objeto video.
+
+```
+import React, { Component } from "react";
+
+class Contador extends Component {
+  state = {
+    video: {
+      title: "Super video",
+      likes: 0,
+    },
+  };
+
+  add = () => {
+    this.setState((state) => ({
+      video: {
+        ...state.video,
+        likes: state.video.likes + 1,
+      },
+    }));
+  };
+
+  render() {
+    return (
+      <div>
+        <h1>{this.state.video.title}</h1>
+        <button onClick={this.add}>Likes: ({this.state.video.likes})</button>
+      </div>
+    );
+  }
+}
+
+function App() {
+  return (
+    <div>
+      <Contador />
+    </div>
+  );
+}
+
+export default App;
+```

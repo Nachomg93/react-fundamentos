@@ -1,12 +1,38 @@
-import React from "react";
-import TarjetaFruta from "./components/TarjetaFruta/TarjetaFrutas";
+import React, { Component } from "react";
 
-const App = () => (
+class Contador extends Component {
+  state = {
+    video: {
+      title: "Super video",
+      likes: 0,
+    },
+  };
+
+  add = () => {
+    this.setState((state) => ({
+      video: {
+        ...state.video,
+        likes: state.video.likes + 1,
+      },
+    }));
+  };
+
+  render() {
+    return (
+      <div>
+        <h1>{this.state.video.title}</h1>
+        <button onClick={this.add}>Likes: ({this.state.video.likes})</button>
+      </div>
+    );
+  }
+}
+
+function App() {
+  return (
     <div>
-      <TarjetaFruta name="Fresa" price={5.20} />
-      <TarjetaFruta name="Melon" price={2.39} />
-      <TarjetaFruta name="Chirimolla" price={2.99} />
+      <Contador />
     </div>
-);
+  );
+}
 
 export default App;
