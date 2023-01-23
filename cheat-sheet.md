@@ -437,3 +437,205 @@ function App() {
 
 export default App;
 ```
+###Usando operador spread para pasar props.
+:point_right: Para pasar informacion de forma dinamica.
+```
+// import './App.css';
+import React, { Component } from "react";
+
+const Gato = (props) => (
+  <div>
+    <h1>Gato 🐈</h1>
+    <pre>{JSON.stringify(props, null, 4)}</pre>
+  </div>
+);
+
+class App extends Component {
+  state = {
+    agilidad: 100,
+    vidas: 7,
+  };
+  render() {
+    const otrosDatos = {
+      raza: "Siames",
+      juegos: 6,
+    };
+    return (
+      <div>
+        <Gato name="Zelu"
+        age="6 años"
+        {...otrosDatos} 
+        {...this.state}
+        />
+      </div>
+    );
+  }
+}
+
+export default App;
+```
+###Manejando eventos de mouse,
+:pushpin:Tipos de eventos: onClick, onMouseDown, onMouseUp, onDoubleClick
+```
+import React, { Component } from "react";
+
+class App extends Component {
+    manejador = () => {
+        alert('Hey Nacho')
+    }
+  
+    render() {
+      
+      return (
+        <div>
+          <button onDoubleClick={this.manejador}>
+            Dispara
+          </button>
+        </div>
+      );
+    }
+  }
+  
+  export default App;
+```
+:point_right: El evento onMouseMove nos calcula las posiciones respectivamente.
+```
+import React, { Component } from "react";
+
+const styles = {
+  height: "200px",
+  background: "gold",
+  padding: "1em",
+  boxSizing: "border-box",
+};
+class App extends Component {
+  state = {
+    y: 0,
+    x: 0,
+  };
+
+  manejador = (e) => {
+    this.setState({
+        x: e.clientX,
+        y: e.clientY
+    })
+  };
+
+  render() {
+    return <div style={styles} onMouseMove={this.manejador}>
+        <div>
+        x: { this.state.x }
+        </div>
+        <div>
+        x: { this.state.y }
+        </div>
+    </div>
+  }
+}
+
+export default App;
+```
+###Ejemplos de Eventos Input.
+:pushpin: El evento onChange este e va a ser disparado en cuanto se le agregue texto en el input.
+:point_right: El e que nos esta llegando se trata de un objeto, podemos acceder a el con el metodo e.target que hace referencia al e, que en este caso es el input. Y con el (e.target.value) obtenemos el texto que se ingresa en el input con el (value).
+:pushpin: Practicamos con eventos onChange, onCopy, onPaste.
+```
+import React, { Component } from "react";
+
+class App extends Component {
+    state = {
+        text: '',
+        evento: ''
+
+    }
+  manejador = (e) => {
+    console.log(e.target.value);
+    this.setState({
+        text: e.target.value,
+        evento: e.type
+    })
+  };
+
+  render() {
+    return (
+      <div>
+        <input type="text" onChange={this.manejador}
+        onCopy={this.manejador}
+        onPaste={this.manejador} />
+        <h2>
+            { this.state.text }
+        </h2>
+        <h3>
+            { this.state.evento }
+        </h3>
+      </div>
+    );
+  }
+}
+
+export default App;
+```
+###Diferencia de evento nativo DOM y evento sintetico de React.
+:point_right: Para ver los eventos nativos.
+```
+import React, { Component } from "react";
+
+class App extends Component {
+    manejador = (e) => {
+e.preventDefault()
+console.log(e.nativeEvent);
+    }
+      render() {
+    return (
+      <div>
+        <a
+        href="https://google.com"
+        onClick={this.manejador}
+        >
+            Google
+        </a>
+      </div>
+    );
+  }
+}
+
+export default App;
+
+```
+###Conservar eventos con React.
+```
+import React, { Component } from "react";
+
+class PersistenciaEventos extends Component {
+  state = {
+    color: "blue",
+  };
+  handlerChange = (e) => {
+    const color = e.target.value
+    this.setState((state) => ({
+      color
+    }));
+  };
+
+  render() {
+    return (
+      <div>
+        <input type="text" onChange={this.handlerChange} />
+        <h1 style={{ color: this.state.color }}>{this.state.color}</h1>
+      </div>
+    );
+  }
+}
+
+const App = () => (
+  <div>
+    <PersistenciaEventos />
+  </div>
+);
+
+export default App;
+```
+###Crear eventos personalizado con React.
+
+
+
