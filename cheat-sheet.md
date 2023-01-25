@@ -437,8 +437,10 @@ function App() {
 
 export default App;
 ```
+
 ###Usando operador spread para pasar props.
 :point_right: Para pasar informacion de forma dinamica.
+
 ```
 // import './App.css';
 import React, { Component } from "react";
@@ -464,7 +466,7 @@ class App extends Component {
       <div>
         <Gato name="Zelu"
         age="6 años"
-        {...otrosDatos} 
+        {...otrosDatos}
         {...this.state}
         />
       </div>
@@ -474,8 +476,10 @@ class App extends Component {
 
 export default App;
 ```
+
 ###Manejando eventos de mouse,
 :pushpin:Tipos de eventos: onClick, onMouseDown, onMouseUp, onDoubleClick
+
 ```
 import React, { Component } from "react";
 
@@ -483,9 +487,9 @@ class App extends Component {
     manejador = () => {
         alert('Hey Nacho')
     }
-  
+
     render() {
-      
+
       return (
         <div>
           <button onDoubleClick={this.manejador}>
@@ -495,10 +499,12 @@ class App extends Component {
       );
     }
   }
-  
+
   export default App;
 ```
+
 :point_right: El evento onMouseMove nos calcula las posiciones respectivamente.
+
 ```
 import React, { Component } from "react";
 
@@ -535,10 +541,12 @@ class App extends Component {
 
 export default App;
 ```
+
 ###Ejemplos de Eventos Input.
 :pushpin: El evento onChange este e va a ser disparado en cuanto se le agregue texto en el input.
 :point_right: El e que nos esta llegando se trata de un objeto, podemos acceder a el con el metodo e.target que hace referencia al e, que en este caso es el input. Y con el (e.target.value) obtenemos el texto que se ingresa en el input con el (value).
 :pushpin: Practicamos con eventos onChange, onCopy, onPaste.
+
 ```
 import React, { Component } from "react";
 
@@ -575,8 +583,10 @@ class App extends Component {
 
 export default App;
 ```
+
 ###Diferencia de evento nativo DOM y evento sintetico de React.
 :point_right: Para ver los eventos nativos.
+
 ```
 import React, { Component } from "react";
 
@@ -602,7 +612,9 @@ console.log(e.nativeEvent);
 export default App;
 
 ```
+
 ###Conservar eventos con React.
+
 ```
 import React, { Component } from "react";
 
@@ -635,7 +647,513 @@ const App = () => (
 
 export default App;
 ```
+
 ###Crear eventos personalizado con React.
+:pushpin: Funcionalidad desde un componente hijo hacia un componente padre.
 
+```
+import React, { Component } from "react";
+import "./global.css";
 
+class Hijo extends Component {
+  manejadorCLick = () => {
+    this.props.onSaluda("Nacho en React");
+  };
+  render() {
+    return (
+      <div className="box blue">
+        <h2>Hijo</h2>
+        <button onClick={this.manejadorCLick}>Saluda</button>
+      </div>
+    );
+  }
+}
 
+class App extends Component {
+  manejador = (name) => {
+    this.setState({ name });
+  };
+
+  render() {
+    return (
+      <div className="box red">
+        <Hijo onSaluda={this.manejador} />
+        <h1>Nombre: {this.state.name}</h1>
+      </div>
+    );
+  }
+}
+
+export default App;
+```
+
+###Renderizamos condicionales con React.
+:point_right: Ejemplos de condicionales.
+
+```
+import React, { Component } from "react";
+
+const Saludo = (props) => {
+  return (
+    <div>
+        <div>
+             { props.name && <strong>{ props.name }</strong>}
+        </div>
+      {props.saluda ? (
+        <h1>Hola Nacho, eres un maquina</h1>
+      ) : (
+        <p>Ups, no hay saludos para ti</p>
+      )}
+    </div>
+  );
+
+  if (props.saluda) {
+    return <h1>Hola Nacho, eres un maquina</h1>;
+  }
+  return <p>Ups, no hay saludos para ti</p>;
+};
+
+const App = () => (
+  <div>
+    <Saludo saluda name= 'Ali'/>
+  </div>
+);
+
+export default App;
+```
+
+###Inyectando HTML en marcado de componente en React.
+
+```
+import React, { Component } from "react";
+
+class App extends Component {
+  state = {
+    marcado: `
+    <h1>Inyectando HTML con React</h1>
+    <br/>
+    <hr/>
+    <a href="#">Algun Link</a>
+    `,
+  };
+  render() {
+    return (
+      <div>
+        <div dangerouslySetInnerHTML={{ __html: this.state.marcado }}></div>
+      </div>
+    );
+  }
+}
+
+export default App;
+```
+
+###Introduciendo a la prop especial children.
+
+```
+import React, { Component } from "react";
+
+const Title = (props) => {
+  const styles = {
+    padding: "0.3em",
+    color: "#FFF",
+    background: props.uiColor,
+    borderRadius: "0.3em",
+    textAlign: "center",
+    fontSize: "50px",
+  };
+
+  console.log(props.children);
+
+  return <h1 style={styles}> {props.children}</h1>;
+};
+class App extends Component {
+  state = {
+    uiColor: "purple",
+  };
+  render() {
+    return (
+      <div>
+        <Title uiColor={this.state.uiColor}>
+          Grande <em>Nacho</em>
+        </Title>
+      </div>
+    );
+  }
+}
+
+export default App;
+```
+
+###Destruturacion avanzada aplicada a componentes.
+
+```
+const user1 = {
+  //   name: "Nacho Martin",
+  username: "Margar",
+  country: "España",
+  social: {
+    instagram: "nachomargar",
+    facebook: "Nacho Martin Garcia",
+  },
+};
+
+const saluda = (user) => {
+  var {
+    username: aliasCool,
+    country,
+    social: { instagram: inst },
+  } = user;
+
+  const orden = ["burger", "te rojo", "yogurt", 124, false];
+  const [comida, bebida, postre, ...restantes] = orden;
+  console.log(restantes);
+  console.log(`Hola soy ${aliasCool}, y mi gusta la ${comida}`);
+};
+
+saluda(user1);
+```
+
+**`OTRO EJEMPLO`**
+
+```
+import React, { Component } from "react";
+
+const Title = ({uiColor, children }) => {
+  const styles = {
+    padding: "0.3em",
+    color: "#FFF",
+    background: uiColor,
+    borderRadius: "0.3em",
+    textAlign: "center",
+    fontSize: "50px",
+  };
+
+  return <h1 style={styles}>{children}</h1>;
+};
+class App extends Component {
+  state = {
+    uiColor: "tomato",
+  };
+  render() {
+
+    const { uiColor } = this.state
+    return (
+      <div>
+        <Title uiColor={uiColor}>
+          Super <em>Nacho</em>
+        </Title>
+      </div>
+    );
+  }
+}
+
+export default App;
+```
+###Elementos con etiquetas con Fragment
+```
+<>
+  <li>Camisetas</li>
+  <li>Pantalones</li>
+  <li>Tenis</li>
+</>
+```
+###Entendiendo los portals de React
+```
+import React, { Component } from "react";
+import ReactDOM from "react-dom";
+
+class PortalModal extends Component {
+  render() {
+    if (!this.props.visible) {
+      return null;
+    }
+
+    const styles = {
+      widht: "100%",
+      height: "100%",
+      position: "absolute",
+      top: "0",
+      left: "0",
+      background: "linear-gradient(to top right, #667eea, #764ba2)",
+      opacity: "0.95",
+      color: "#FFF",
+    };
+    return ReactDOM.createPortal(
+      <div style={styles}>{this.props.children}</div>,
+      document.getElementById("modal-root")
+    );
+  }
+}
+class App extends Component {
+  state = {
+    visible: false,
+    num: 0,
+  };
+
+  componentDidMount() {
+    setInterval(() => {
+      this.setState((state) => ({
+        num: state.num + 1,
+      }));
+    }, 1000);
+  }
+
+  mostrar = () => {
+    this.setState({ visible: true });
+  };
+  cerrar = () => {
+    this.setState({ visible: false });
+  };
+
+  render() {
+    return (
+      <div>
+        <button onClick={this.mostrar}>Mostrar</button>
+        <PortalModal visible={this.state.visible}>
+          <button onClick={this.cerrar}>Cerrar</button>
+          <h1>Hola desde un portal modal {this.state.num}</h1>
+        </PortalModal>
+      </div>
+    );
+  }
+}
+
+export default App;
+```
+###Controlar los datos de entrada con props-types.
+```
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+
+class Profile extends Component {
+  static propTypes = {
+    name: PropTypes.string.isRequired,
+    bio: PropTypes.string,
+    email: PropTypes.string,
+    age: PropTypes.number
+  };
+  render() {
+    const { name, bio, email } = this.props;
+    return (
+      <div>
+        <h1>{name}</h1>
+        <p>{bio}</p>
+        <a href={`mailto:${email}`}>{email}</a>
+      </div>
+    );
+  }
+}
+
+// Profile.propTypes = {}
+
+class App extends Component {
+  state = {};
+
+  render() {
+    return (
+      <div>
+        <Profile
+          name={777}
+          bio="Developer in progress"
+          email="nachomg93@..."
+        />
+      </div>
+    );
+  }
+}
+
+export default App;
+```
+###Iterando listas con React.
+```
+import React, { Component } from "react";
+
+const motos = ["honda", "yamaha", "ducati", "bmw", "peugeot", "suzuki"];
+
+class App extends Component {
+  state = {};
+
+  render() {
+    return (
+      <div>
+        <ul>
+          {motos.map((moto) => {
+            return <li>{moto}</li>;
+          })}
+        </ul>
+      </div>
+    );
+  }
+}
+
+export default App;
+```
+###Iterando listas de Objetos.
+```
+import React, { Component } from "react";
+
+class App extends Component {
+  state = {
+    products: [
+      {
+        id: 1,
+        name: "Nichol",
+        colors: ["#0408d8", "#9ef96d", "#5dbc01"],
+        price: 636,
+      },
+      {
+        id: 2,
+        name: "Adrea",
+        colors: ["#3eadc4", "#9ef96d", "#5dbc01", "#0408d8"],
+        price: 83,
+      },
+      {
+        id: 3,
+        name: "Robby",
+        colors: ["#5dbc01", "#0408d8", "#9ef96d"],
+        price: 963,
+      },
+      {
+        id: 4,
+        name: "Desdemona",
+        colors: ["#4c2a6c", "#5dbc01"],
+        price: 183,
+      },
+      {
+        id: 5,
+        name: "Reinwald",
+        colors: ["#9ef96d", "#9ef96d"],
+        price: 173,
+      },
+    ],
+  };
+
+  render() {
+    return (
+      <div>
+        <h3>Iterando listas de Objetos</h3>
+        <div>
+          {this.state.products.map((product) => {
+            return (
+              <div>
+                {product.name} - ${product.price}
+                <div>
+                  {product.colors.map((color) => {
+                    return (
+                      <span
+                        style={{
+                          width: "13px",
+                          height: "13px",
+                          borderRadius: "0.1rem",
+                          border: "1px solid gray",
+                          display: "inline-block",
+                          margin: "0.1em",
+                          background: color,
+                        }}
+                      ></span>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+}
+
+export default App;
+```
+###Iterando propiedades de Objetos.
+```
+import React, { Component } from "react";
+
+class App extends Component {
+  state = {
+    user: {
+      name: "Nacho Martin",
+      username: "Margar",
+      country: "España",
+      instagram: "nachomargar",
+      facebook: "Nacho Martin Garcia",
+    },
+  };
+
+  render() {
+    const { user } = this.state;
+    const keys = Object.keys(user);
+    return (
+      <div>
+        <h3>Iterando listas de Objetos</h3>
+        <ul>
+          {keys.map((key) => (
+            <li>
+              <strong>{key}:</strong> {user[key]}
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  }
+}
+
+export default App;
+```
+###Prop key al iterar listas con React.
+```
+import React, { Component } from "react";
+
+const users = [
+  {
+    id: 1,
+    name: "Chelsea",
+    country: "Vietnam",
+  },
+  {
+    id: 2,
+    name: "Ilsa",
+    country: "China",
+  },
+  {
+    id: 3,
+    name: "Hymie",
+    country: "Nicaragua",
+  },
+  {
+    id: 4,
+    name: "Malorie",
+    country: "United States",
+  },
+  {
+    id: 5,
+    name: "Chantalle",
+    country: "Pakistan",
+  },
+  {
+    id: 6,
+    name: "Elvin",
+    country: "Philippines",
+  },
+];
+class App extends Component {
+  render() {
+    return (
+      <div>
+        <h1>Iterando</h1>
+        <ul>
+          {users.map((user, index)=>(
+            <li key={user.id}>
+              {user.name} - {user.country}
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  }
+}
+
+export default App;
+```
+###Iteracion de Components.
