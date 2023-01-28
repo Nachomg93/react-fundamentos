@@ -1157,3 +1157,198 @@ class App extends Component {
 export default App;
 ```
 ###Iteracion de Components.
+```
+import React, { Component } from "react";
+import classes from "./App.module.css";
+
+const images = [
+  {
+    id: 1,
+    author: {
+      name: "Erinna",
+      avatar: "https://robohash.org/abaliquamnisi.png?size=50x50&set=set1",
+    },
+    source: "http://dummyimage.com/181x100.png/cc0000/ffffff",
+    views: 1,
+  },
+  {
+    id: 2,
+    author: {
+      name: "Bevon",
+      avatar: "https://robohash.org/quoseteum.png?size=50x50&set=set1",
+    },
+    source: "http://dummyimage.com/169x100.png/5fa2dd/ffffff",
+    views: 2,
+  },
+  {
+    id: 3,
+    author: {
+      name: "Pooh",
+      avatar: "https://robohash.org/eaquequasiest.png?size=50x50&set=set1",
+    },
+    source: "http://dummyimage.com/172x100.png/cc0000/ffffff",
+    views: 3,
+  },
+  {
+    id: 4,
+    author: {
+      name: "Georgette",
+      avatar:
+        "https://robohash.org/ipsanihilarchitecto.png?size=50x50&set=set1",
+    },
+    source: "http://dummyimage.com/225x100.png/cc0000/ffffff",
+    views: 4,
+  },
+];
+
+const Image = (props) => (
+  <div className={classes.card}>
+    <img src={props.image.source} alt="Imagen" className={classes.image} />
+    <div className={classes.footer}>
+      <img src={props.image.author.avatar} alt="Avatar" className={classes.avatar}/>
+      <div>{props.image.author.name}</div>
+      <div>{props.image.views}</div>
+    </div>
+  </div>
+);
+
+class App extends Component {
+  render() {
+    return (
+      <div className={classes.images}>
+        {images.map((image) => (
+          <Image image={image} key={image.id}/>
+        ))}
+      </div>
+    );
+  }
+}
+
+export default App;
+```
+###PAsar datos al iterar listas con React.
+```
+import React, { Component } from "react";
+// import classes from "./App.module.css";
+
+class App extends Component {
+  state = {
+    autos: [
+      {
+        name: "Toyota",
+        price: 87315,
+      },
+      {
+        name: "Mazda",
+        price: 10077,
+      },
+      {
+        name: "Chevrolet",
+        price: 37917,
+      },
+      {
+        name: "Hyundai",
+        price: 71100,
+      },
+      {
+        name: "Bentley",
+        price: 14111,
+      },
+      {
+        name: "Toyota",
+        price: 1563,
+      },
+      {
+        name: "Dodge",
+        price: 89664,
+      },
+      {
+        name: "Mercedes-Benz",
+        price: 66484,
+      },
+      {
+        name: "Audi",
+        price: 81870,
+      },
+      {
+        name: "Pontiac",
+        price: 68137,
+      },
+    ],
+    autoSeleccionado: {},
+  };
+
+  select = (autoSeleccionado, e) => {
+    this.setState({
+      autoSeleccionado,
+    });
+  };
+  render() {
+    return (
+      <ul>
+        {this.state.autos.map(auto => (
+          <li key={auto.name}
+          onClick={this.select.bind(this, auto)}
+          style={{
+            color: this.state.autoSeleccionado.name === auto.name ? "red" : "black"
+          }}
+          >
+            <strong>{auto.name}</strong> - $ {auto.price}
+          </li>
+        ))}
+      </ul>
+    );
+  }
+}
+
+export default App;
+```
+###Que son los Refs.
+```
+import React, { Component } from "react";
+// import classes from "./App.module.css";
+
+class Entrada extends Component {
+
+  entrada = React.createRef();
+
+  //Hace focus al input cuando se monta el componente
+  componentDidMount() { 
+    this.focus();
+  }
+
+  focus = () => {
+    this.entrada.current.focus();
+  };
+
+  blur = () => {
+    this.entrada.current.blur();
+  };
+  render() {
+    return (
+      <div>
+        <input type="text" ref={this.entrada} />
+        <button onClick={this.focus}>Focus</button>
+        <button onClick={this.blur}>Blur</button>
+      </div>
+    );
+  }
+}
+
+class App extends Component {
+  render() {
+    return (
+      <div>
+        <h1>React Refs</h1>
+        <Entrada />
+      </div>
+    );
+  }
+}
+
+export default App;
+```
+###Integrar librerias de terceros usando las Refs de React.
+```
+
+```
