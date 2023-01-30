@@ -1348,7 +1348,184 @@ class App extends Component {
 
 export default App;
 ```
-###Integrar librerias de terceros usando las Refs de React.
+###Reenvio de la prop especial ref con forwardref.
+```
+import React, { Component } from "react";
+// import { Chart } from "chart.js";
+// import classes from "./App.module.css";
+
+const FancyInput = React.forwardRef((props, ref) => (
+  <div>
+    <input type="text" ref={ref} />
+  </div>
+));
+
+class App extends Component {
+  entrada = React.createRef();
+
+  componentDidMount() {
+    console.log(this.entrada);
+  }
+
+  render() {
+    return (
+      <div>
+        <h1>React Refs</h1>
+        <FancyInput ref={this.entrada} />
+      </div>
+    );
+  }
+}
+
+export default App;
+```
+###Manejando Inputs  no controladoscon Refs.
+```
+import React, { Component } from "react";
+// import { Chart } from "chart.js";
+// import classes from "./App.module.css";
+
+class InputNoControlado extends Component {
+  nombre = React.createRef();
+  email = React.createRef();
+  handleClick = () => {
+    const nombre = this.nombre.current.value;
+    const email = this.email.current.value;
+
+    //Manejo de datos
+    this.props.onSend({ nombre, email });
+  };
+  render() {
+    return (
+      <div>
+        <input type="text" ref={this.nombre} placeholder="Nombre" />
+        <input type="text" ref={this.email} placeholder="Email" />
+        <button onClick={this.handleClick}></button>
+      </div>
+    );
+  }
+}
+
+class App extends Component {
+  //Recibe los datos en el momento que se envia.
+  send = (data) => {
+    console.log(data);
+  };
+  render() {
+    return (
+      <div>
+        <h1>Inpusts No controlados Refs </h1>
+        <InputNoControlado onSend={this.send} />
+      </div>
+    );
+  }
+}
+
+export default App;
+```
+###Manejando Inputs No controlados en formularios.
+```
+import React, { Component } from "react";
+// import { Chart } from "chart.js";
+// import classes from "./App.module.css";
+
+class InputNoControlado extends Component {
+  handleSubmit = (e) => {
+    e.preventDefault();
+    //Para acceder a los datos de los inputs.
+    const nombre = e.target[0].value;
+    const email = e.target[1].value;
+
+    //Manejo de datos
+    this.props.onSend({ nombre, email });
+  };
+  render() {
+    return (
+      <form onSubmit={this.handleSubmit}>
+        <input type="text" placeholder="Nombre" />
+        <input type="text" placeholder="Email" />
+        <button>Enviar</button>
+      </form>
+    );
+  }
+}
+
+class App extends Component {
+  send = (data) => {
+    console.log(data);
+  };
+  render() {
+    return (
+      <div>
+        <h1>Inpusts No controlados Refs </h1>
+        <InputNoControlado onSend={this.send} />
+      </div>
+    );
+  }
+}
+
+export default App;
+```
+###Manejando inputs controlados con React.
+```
+import React, { Component } from "react";
+// import { Chart } from "chart.js";
+// import classes from "./App.module.css";
+
+class InputControlado extends Component {
+  state = {
+    text: "",
+    tieneError: false,
+    color: "E8E8E8",
+  };
+
+  actualizar = (event) => {
+    const text = event.target.value;
+    const tieneError = text !== "" && text.length < 5;
+    let color = "green";
+    if (text.trim() === "") {
+      color = "E8E8E8";
+    }
+    if (text.trim() !== "" && text.length < 5) {
+      color = "red";
+    }
+    this.setState({ text, color });
+  };
+
+  render() {
+    const styles = {
+      border: `1px solid ${this.state.color}`,
+      padding: "0.3em 0.6em",
+      outline: "none",
+    };
+    return (
+      <input
+        type="text"
+        value={this.state.text}
+        onChange={this.actualizar}
+        style={styles}
+      />
+    );
+  }
+}
+
+class App extends Component {
+  send = (data) => {
+    console.log(data);
+  };
+  render() {
+    return (
+      <div>
+        <h1>Inpusts controlados</h1>
+        <InputControlado />
+      </div>
+    );
+  }
+}
+
+export default App;
+```
+###Propagacion de datos con Inputs controlados.
 ```
 
 ```
