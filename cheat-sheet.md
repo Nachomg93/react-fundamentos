@@ -1527,5 +1527,243 @@ export default App;
 ```
 ###Propagacion de datos con Inputs controlados.
 ```
+import React, { Component } from "react";
+// import { Chart } from "chart.js";
+// import classes from "./App.module.css";
+
+class InputControlado extends Component {
+  state = {
+    text: "",
+    tieneError: false,
+    color: "E8E8E8",
+  };
+
+  actualizar = (event) => {
+    const text = event.target.value;
+    let color = "green";
+    if (text.trim() === "") {
+      color = "E8E8E8";
+    }
+    if (text.trim() !== "" && text.length < 5) {
+      color = "red";
+    }
+    this.setState({ text, color });
+
+    // Propagando datos al padre
+    this.props.onChange(this.props.name, text);
+  };
+
+  render() {
+    const styles = {
+      border: `1px solid ${this.state.color}`,
+      padding: "0.3em 0.6em",
+      outline: "none",
+    };
+    return (
+      <input
+        type="text"
+        value={this.state.text}
+        onChange={this.actualizar}
+        style={styles}
+        placeholder={this.props.placeholder}
+      />
+    );
+  }
+}
+
+class App extends Component {
+  state = {
+    name: "",
+    email: "",
+  };
+
+  actualizar = (name, text) => {
+    //Notacion de corchetes para actualizar el estado.
+    this.setState({
+      [name]: text,
+    });
+  };
+
+  render() {
+    return (
+      <div>
+        <h1>Inpusts controlados</h1>
+        <InputControlado
+          onChange={this.actualizar}
+          placeholder="Nombre Completo"
+          name="name"
+        />
+        <InputControlado
+          onChange={this.actualizar}
+          placeholder="Tu Email"
+          name="email"
+        />
+        <h2>Nombre: {this.state.name}</h2>
+        <h2>Email: {this.state.email}</h2>
+      </div>
+    );
+  }
+}
+export default App;
+```
+###Usando el atributo 'for' en formularios.
+```
+import React, { Component } from "react";
+// import { Chart } from "chart.js";
+// import classes from "./App.module.css";
+
+class InputNoControlado extends Component {
+  render() {
+    return (
+      <form onSubmit={this.handleSubmit}>
+        <p>
+          <label htmlFor="name">Nombre</label>
+          <input type="text" placeholder="Nombre" id="name" />
+        </p>
+        <p>
+          <label>Email</label>
+          <input type="text" placeholder="Email" />
+        </p>
+        <button>Enviar</button>
+      </form>
+    );
+  }
+}
+
+class App extends Component {
+  send = (data) => {
+    console.log(data);
+  };
+  render() {
+    return (
+      <div>
+        <h1>Atributo Ref</h1>
+        <InputNoControlado onSend={this.send} />
+      </div>
+    );
+  }
+}
+export default App;
+```
+###Ejemplo de formularios con opciones de Seleccion Multiples.
+```
+import React, { Component } from "react";
+// import { Chart } from "chart.js";
+// import classes from "./App.module.css";
+
+class InputNoControlado extends Component {
+  render() {
+    return (
+      <form onSubmit={this.handleSubmit}>
+        <p>
+          <label htmlFor="name">Nombre</label>
+          <input type="text" placeholder="Nombre" id="name" />
+        </p>
+        <p>
+          <label>Email</label>
+          <input type="text" placeholder="Email" />
+        </p>
+        <button>Enviar</button>
+      </form>
+    );
+  }
+}
+
+class App extends Component {
+  state = {
+    techs: ["Vue"],
+  };
+
+  handleChange = (event) => {
+    //Array.from() convierte esta colaccion en un [].
+    const techs = Array.from(
+      event.target.selectedOptions,
+      (option) => option.value
+    );
+
+    this.setState({ techs });
+  };
+
+  render() {
+    return (
+      <div>
+        <h1>Etiqueta Select</h1>
+        <form>
+          <select
+            value={this.state.techs}
+            onChange={this.handleChange}
+            multiple={true}
+          >
+            <option value="Angular">Angular</option>
+            <option value="React">React</option>
+            <option value="Vue">Vue</option>
+            <option value="Vanilla">Vanilla</option>
+          </select>
+        </form>
+        <ul>
+          {this.state.techs.map((tech) => (
+            <li key={tech}>{tech}</li>
+          ))}
+        </ul>
+      </div>
+    );
+  }
+}
+export default App;
+```
+###Ejemplo de Input Checkbox.
+```
+import React, { Component } from "react";
+// import { Chart } from "chart.js";
+// import classes from "./App.module.css";
+
+class InputNoControlado extends Component {
+  render() {
+    return (
+      <form onSubmit={this.handleSubmit}>
+        <p>
+          <label htmlFor="name">Nombre</label>
+          <input type="text" placeholder="Nombre" id="name" />
+        </p>
+        <p>
+          <label>Email</label>
+          <input type="text" placeholder="Email" />
+        </p>
+        <button>Enviar</button>
+      </form>
+    );
+  }
+}
+
+class App extends Component {
+  state = {
+    active: true,
+  };
+
+  handleChange = (e) => {
+    this.setState({
+      active: e.target.checked,
+    });
+  };
+  render() {
+    const { active } = this.state;
+    return (
+      <div>
+        {active && <h1>Etiqueta Checkbox</h1>}
+        <form>
+          <input
+            type="checkbox"
+            checked={this.state.active}
+            onChange={this.handleChange}
+          />
+        </form>
+      </div>
+    );
+  }
+}
+export default App;
+```
+###Usando los Chrome Dev Tools.
+```
 
 ```
