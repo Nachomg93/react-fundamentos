@@ -3,51 +3,42 @@ import React, { Component } from "react";
 
 class App extends Component {
   state = {
-    users: [],
-    cargando: true,
+    movies: {},
+    isLoading: false,
   };
 
-  //Metodo de ciclo de vida, que es asincrono y se ejecuta cuando el componente ya esta montado.
-  componentDidMount() {
-    // setTimeout(() => {
-    //   this.setState({
-    //     text: "Hola React",
-    //   });
-    // }, 1000);
-    fetch("https://jsonplaceholder.typicode.com/users")
-    //El metodo Fetch regresa una promesa, por lo que podemos usar el metodo then.
-      .then((res) =>
-        //Parceamos la respuesta a json.
-        res.json()
-      )
-      //El metodo json nos devuelve otra promesa, por lo que podemos usar el metodo then.
-      .then((users) =>
-        this.setState({
-          users,
-          cargando: false,
-        })
-      )
-      .catch((err) => {
-        console.log(err);
-      });
-  }
+  handleSubmit = (event) => {
+    event.preventDefault();
+    this.setState({ isLoading: true });
+    const title = event.target[0].value;
+    const URL = "http://www.omdbapi.com/?i=tt3896198&apikey=d9a3ddd0";
+    fetch(URL + "&t=" + title)
+      .then((res) => res.json())
+      .then((movies) => this.setState({ movies, isLoading: false }));
+  };
 
   render() {
-    if (this.state.cargando) {
-      return <h1>Cargando...</h1>;
-    }
+    const { movies, isLoading } = this.state;
     return (
       <div>
-        <h1>Peticion HTTP</h1>
-        <h2>{this.state.text}</h2>
-        <ul>
-          {this.state.users.map((user) => (
-            <li key={user.id}>
-              {user.name}
-              <a href={`http://${user.website}`}>Website</a>
-            </li>
-          ))}
-        </ul>
+        <form onSubmit={this.handleSubmit}>
+          <input type="text" placeholder="nombre de la pelicula" />
+          <button>Buscar</button>
+        </form>
+        {isLoading && (
+          <h2>Cargando...</h2>
+        )}
+        {movies.Title && !isLoading && (
+          <div>
+            <h1>{movies.Title}</h1>
+            <p>{movies.Plot}</p>
+            <img
+              src={movies.Poster}
+              alt="Poster"
+              style={{ width: "200px", height: "300px" }}
+            />
+          </div>
+        )}
       </div>
     );
   }
