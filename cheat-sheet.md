@@ -1763,7 +1763,130 @@ class App extends Component {
 }
 export default App;
 ```
-###Usando los Chrome Dev Tools.
+###Manejo y limite de errores dentro de componentes.
 ```
+import React, { Component } from "react";
+// import classes from "./App.module.css";
 
+class Boton extends Component {
+  state = {
+    dispatchError: false,
+  };
+
+  dispatchError = () => {
+    this.setState({ dispatchError: true });
+  };
+
+  render() {
+    if (this.state.dispatchError) {
+      throw new Error("Lo siento he fallado!");
+    }
+    return <button onClick={this.dispatchError}>Boton con Bugg</button>;
+  }
+}
+
+class LimiteErrores extends Component {
+  state = {
+    tieneError: false,
+  };
+
+  //Solo se dispara si el componente hijo tiene un error.
+  componentDidCatch(error, errorInfo) {
+    this.setState({
+      tieneError: true,
+      error,
+    });
+  }
+
+  render() {
+    if (this.state.tieneError) {
+      return (
+        <div>
+          <h1>Algo ha ido mal</h1>
+          <p>Por favor, recarga la página o intenta más tarde</p>
+          <p style={{color:'orangered'}}>{this.state.error && this.state.error.toString()}</p>
+        </div>
+      );
+    }
+    //Renderiza el componente hijo
+    return this.props.children;
+  }
+}
+
+class App extends Component {
+  state = {};
+
+  render() {
+    return (
+      <div>
+        <LimiteErrores>
+          <Boton />
+        </LimiteErrores>
+      </div>
+    );
+  }
+}
+export default App;
+```
+###Haciendo una llamada a una API Rest con React.
+```
+import React, { Component } from "react";
+// import classes from "./App.module.css";
+
+class App extends Component {
+  state = {
+    users: [],
+    cargando: true,
+  };
+
+  //Metodo de ciclo de vida, que es asincrono y se ejecuta cuando el componente ya esta montado.
+  componentDidMount() {
+    // setTimeout(() => {
+    //   this.setState({
+    //     text: "Hola React",
+    //   });
+    // }, 1000);
+    fetch("https://jsonplaceholder.typicode.com/users")
+    //El metodo Fetch regresa una promesa, por lo que podemos usar el metodo then.
+      .then((res) =>
+        //Parceamos la respuesta a json.
+        res.json()
+      )
+      //El metodo json nos devuelve otra promesa, por lo que podemos usar el metodo then.
+      .then((users) =>
+        this.setState({
+          users,
+          cargando: false,
+        })
+      )
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
+  render() {
+    if (this.state.cargando) {
+      return <h1>Cargando...</h1>;
+    }
+    return (
+      <div>
+        <h1>Peticion HTTP</h1>
+        <h2>{this.state.text}</h2>
+        <ul>
+          {this.state.users.map((user) => (
+            <li key={user.id}>
+              {user.name}
+              <a href={`http://${user.website}`}>Website</a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  }
+}
+
+export default App;
+```
+###Ejemplo de buscador de peliculas.
+```
 ```

@@ -1,49 +1,56 @@
 import React, { Component } from "react";
-// import { Chart } from "chart.js";
 // import classes from "./App.module.css";
-
-class InputNoControlado extends Component {
-  render() {
-    return (
-      <form onSubmit={this.handleSubmit}>
-        <p>
-          <label htmlFor="name">Nombre</label>
-          <input type="text" placeholder="Nombre" id="name" />
-        </p>
-        <p>
-          <label>Email</label>
-          <input type="text" placeholder="Email" />
-        </p>
-        <button>Enviar</button>
-      </form>
-    );
-  }
-}
 
 class App extends Component {
   state = {
-    active: true,
+    users: [],
+    cargando: true,
   };
 
-  handleChange = (e) => {
-    this.setState({
-      active: e.target.checked,
-    });
-  };
+  //Metodo de ciclo de vida, que es asincrono y se ejecuta cuando el componente ya esta montado.
+  componentDidMount() {
+    // setTimeout(() => {
+    //   this.setState({
+    //     text: "Hola React",
+    //   });
+    // }, 1000);
+    fetch("https://jsonplaceholder.typicode.com/users")
+    //El metodo Fetch regresa una promesa, por lo que podemos usar el metodo then.
+      .then((res) =>
+        //Parceamos la respuesta a json.
+        res.json()
+      )
+      //El metodo json nos devuelve otra promesa, por lo que podemos usar el metodo then.
+      .then((users) =>
+        this.setState({
+          users,
+          cargando: false,
+        })
+      )
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
   render() {
-    const { active } = this.state;
+    if (this.state.cargando) {
+      return <h1>Cargando...</h1>;
+    }
     return (
       <div>
-        {active && <h1>Etiqueta Checkbox</h1>}
-        <form>
-          <input
-            type="checkbox"
-            checked={this.state.active}
-            onChange={this.handleChange}
-          />
-        </form>
+        <h1>Peticion HTTP</h1>
+        <h2>{this.state.text}</h2>
+        <ul>
+          {this.state.users.map((user) => (
+            <li key={user.id}>
+              {user.name}
+              <a href={`http://${user.website}`}>Website</a>
+            </li>
+          ))}
+        </ul>
       </div>
     );
   }
 }
+
 export default App;
