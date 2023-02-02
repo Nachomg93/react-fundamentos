@@ -1897,16 +1897,37 @@ class App extends Component {
     movies: {},
     isLoading: false,
   };
+//Sin async await
+  // handleSubmit = (event) => {
+  //   event.preventDefault();
+  //   this.setState({ isLoading: true });
+  //   const title = event.target[0].value;
+  //   const URL = "http://www.omdbapi.com/?i=tt3896198&apikey=d9a3ddd0";
+  //   fetch(URL + "&t=" + title)
+  //     .then((res) => res.json())
+  //     .then((movies) => this.setState({ movies, isLoading: false }));
+  // };
 
-  handleSubmit = (event) => {
-    event.preventDefault();
-    this.setState({ isLoading: true });
-    const title = event.target[0].value;
-    const URL = "http://www.omdbapi.com/?i=tt3896198&apikey=d9a3ddd0";
-    fetch(URL + "&t=" + title)
-      .then((res) => res.json())
-      .then((movies) => this.setState({ movies, isLoading: false }));
-  };
+//Con async await
+handleSubmit = async (event) => {
+  event.preventDefault();
+  this.setState({ isLoading: true });
+  const title = event.target[0].value;
+  const URL = "http://www.omdbapi.com/?i=tt3896198&apikey=d9a3ddd0";
+  const res = await fetch(URL + "&t=" + title)
+  const movie = await res.json()
+    this.setState({ movie, isLoading: false });
+};
+
+handleSubmit = (event) => {
+  event.preventDefault();
+  this.setState({ isLoading: true });
+  const title = event.target[0].value;
+  const URL = "http://www.omdbapi.com/?i=tt3896198&apikey=d9a3ddd0";
+  fetch(URL + "&t=" + title)
+    .then((res) => res.json())
+    .then((movies) => this.setState({ movies, isLoading: false }));
+};
 
   render() {
     const { movies, isLoading } = this.state;
