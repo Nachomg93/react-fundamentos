@@ -1958,3 +1958,322 @@ handleSubmit = (event) => {
 
 export default App;
 ```
+###Comunicacion de metodos de instancia (Padre e hijo).
+```
+import React, { Component } from "react";
+
+// import classes from "./App.module.css";
+
+const Header = () => {
+  const subtitleStyles = {
+    fontWeight: "bold",
+  };
+
+  const headerStyles = {
+    margin: "0.6em",
+    borderRadius: "0.3em",
+    border: "1px solid #d2d2d2",
+    padding: "2em 0.4em",
+    fontFamily: "sans-serif",
+    fontSize: "1.5em",
+  };
+  return (
+    <header style={headerStyles}>
+      <div>Comunicacion entre componentes</div>
+      <div style={subtitleStyles}>Metodos de instancia</div>
+    </header>
+  );
+};
+
+class Hijo extends Component {
+  state = {
+    message: "****",
+  };
+  dispatchAlert = (e, message = "Alert desde el Hijo") => {
+    alert(message);
+    this.setState({ message });
+  };
+
+  render() {
+    return (
+      <div>
+        <h2> {this.state.message} </h2>
+        <button onClick={this.dispatchAlert}>Hijo</button>
+      </div>
+    );
+  }
+}
+
+class App extends Component {
+  hijo = React.createRef();
+
+  handleClick = () => {
+    this.hijo.current.dispatchAlert(null, "Hola desde el padre");
+  };
+
+  state = {};
+
+  render() {
+    return (
+      <div>
+        <Header />
+        <Hijo ref={this.hijo} />
+        <button onClick={this.handleClick}>Padre</button>
+      </div>
+    );
+  }
+}
+
+export default App;
+```
+###Comunicacion Event Bubbling (Hijo a Padre).
+```
+import React, { Component } from "react";
+
+// import classes from "./App.module.css";
+
+const Header = () => {
+  return (
+    <header>
+      <div>
+        <h2>( Hijo a Padre )</h2>
+        </div>
+      <h3>
+        <strong>Event Bubbling</strong>
+      </h3>
+    </header>
+  );
+};
+
+class Hijo extends Component {
+  handleClick = (e) => {
+    // e.stopPropagation();
+    e.saludo = 'Hola desde el hijo'
+    console.log('Click en el <Hijo />');
+  };
+  render() {
+
+    return (
+      <div style={boxStyles}
+      onClick={this.handleClick}>
+        <p>Hijo</p>
+      </div>
+    );
+  }
+}
+
+const boxStyles = {
+  margin: "0.5em",
+  borderRadius: "0.3em",
+  border: "1px solid #d2d2d2",
+  padding: "0.5em",
+  textAlign: "center",
+};
+
+class App extends Component {
+  state = {};
+
+  handleClick = (e) => {
+    console.log('Click en el <Padre /> ', e.saludo);
+  };
+
+  render() {
+    return (
+      <div style={boxStyles}
+      onClick={this.handleClick}
+      >
+        <Header />
+        <Hijo />
+      </div>
+    );
+  }
+}
+
+export default App;
+```
+###Comunicacion Parent Componenet (Hermanos).
+```
+import React, { Component } from "react";
+
+// import classes from "./App.module.css";
+
+const Header = () => {
+  return (
+    <header>
+      <div>
+        <p>( Hermanos )</p>
+      </div>
+      <h3>
+        <strong>Parent Component</strong>
+      </h3>
+    </header>
+  );
+};
+
+class ComponentA extends Component {
+  render() {
+    const { num } = this.props;
+    return (
+      <div style={blueStyles}>
+        <button onClick={this.props.onAdd}>Component A ( {num} )</button>
+      </div>
+    );
+  }
+}
+
+class ComponentB extends Component {
+  render() {
+    const { num } = this.props;
+    return (
+      <div style={redStyles}>
+        <button onClick={this.props.onAdd}>Component B ( {num} )</button>
+      </div>
+    );
+  }
+}
+
+const boxStyles = {
+  margin: "0.5em",
+  borderRadius: "0.3em",
+  border: "1px solid #d2d2d2",
+  padding: "0.5em",
+  textAlign: "center",
+};
+
+const blueStyles = {
+  ...boxStyles,
+  border: "1px solid blue",
+};
+
+const redStyles = {
+  ...boxStyles,
+  border: "1px solid red",
+};
+
+class App extends Component {
+  state = {
+    countA: 0,
+    countB: 0,
+  };
+
+  handleAddA = () => {
+    this.setState(state => ({
+      countA: state.countA + 1
+    }));
+  };
+
+  handleAddB = () => {
+    this.setState(state => ({
+      countB: state.countB + 2
+    }));
+  };
+
+  render() {
+    const { countA, countB } = this.state;
+    return (
+      <div style={boxStyles}>
+        <Header />
+        <ComponentA num={countA} onAdd={this.handleAddB}
+         />
+        <ComponentB num={countB} onAdd={this.handleAddA} />
+      </div>
+    );
+  }
+}
+
+export default App;
+```
+###Observer pattern.
+```
+import React, { Component } from "react";
+import PubSub from "pubsub-js";
+// import classes from "./App.module.css";
+
+const Header = () => {
+  return (
+    <header>
+      <div>
+        <p>( Cualquiera )</p>
+      </div>
+      <h3>
+        <strong>Observer Pattern</strong>
+      </h3>
+    </header>
+  );
+};
+const boxStyles = {
+  margin: "0.5em",
+  borderRadius: "0.3em",
+  border: "1px solid gray",
+  padding: "0.5em",
+  textAlign: "center",
+};
+
+class Bisnieto extends Component {
+  state = {
+    message: "******",
+  }
+
+  handleClick = () => {
+    PubSub.publish("saludo", "Hola desde el bisnieto");
+  };
+
+  componentDidMount() {
+    PubSub.subscribe("otro evento", (e, data) => {
+      this.setState({ message: data.title });
+    });
+  }
+
+  render() {
+    return (
+      <div style={boxStyles}>
+        <p>{ this.state.message }</p>
+        <button onClick={this.handleClick}>Nieto</button>
+      </div>
+    );
+  }
+}
+
+class Nieto extends Component {
+  render() {
+    return (
+      <div style={boxStyles}>
+        <Bisnieto />
+      </div>
+    );
+  }
+}
+
+class Hijo extends Component {
+  render() {
+    return (
+      <div style={boxStyles}>
+        <Nieto />
+      </div>
+    );
+  }
+}
+
+class App extends Component {
+  componentDidMount() {
+    PubSub.subscribe("saludo", (e, data) => {
+      alert(data);
+    });
+  }
+
+  handleClick = () => {
+    PubSub.publish("otro avento", { title: "Hola desde <App />" });
+  };
+  render() {
+    return (
+      <div style={boxStyles}>
+        <button onClick={this.handleClick}>Padre</button>
+        <Header />
+        <Hijo />
+      </div>
+    );
+  }
+}
+
+export default App;
+```
