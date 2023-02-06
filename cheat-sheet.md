@@ -2277,3 +2277,449 @@ class App extends Component {
 
 export default App;
 ```
+###Patron Render Prop(Hijo a padre).
+```
+import React, { Component } from "react";
+
+// import classes from "./App.module.css";
+
+// const { Provider, Consumer } = React.createContext();
+
+const Header = () => {
+  return (
+    <header>
+      <div>
+        <p>( Hijo a PAdre )</p>
+      </div>
+      <h3>
+        <strong>Renders Props</strong>
+      </h3>
+    </header>
+  );
+};
+const boxStyles = {
+  margin: "0.5em",
+  borderRadius: "0.3em",
+  border: "1px solid gray",
+  padding: "0.5em",
+  textAlign: "center",
+};
+
+class List extends Component {
+  render() {
+    const { list, render } = this.props;
+    return (
+      <div>
+        {list.map((item, index) => {
+          if (render) {
+            return render(item, index);
+          }
+
+          return <li key={item.name}>{item.name}</li>;
+        })}
+      </div>
+    );
+  }
+}
+
+class App extends Component {
+  state = {
+    fruits: [
+      { name: "Fresa", price: 10 },
+      { name: "Sandia", price: 16 },
+      { name: "Mango", price: 22 },
+      { name: "Manzana", price: 18 },
+    ],
+  };
+
+  render() {
+    const { fruits } = this.state;
+    return (
+      <div style={boxStyles}>
+        <Header />
+        <List 
+          list={fruits} 
+          render={(data, index) => (
+            <div>
+              {data.name} - ${data.price}
+            </div>
+          )} 
+        />
+      </div>
+    );
+  }
+}
+
+export default App;
+```
+###Ejemplo de patron(render props).
+```
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+
+// import classes from "./App.module.css";
+
+// const { Provider, Consumer } = React.createContext();
+
+const Header = () => {
+  return (
+    <header>
+      <div>
+        <p>( Hijo a Padre )</p>
+      </div>
+      <h3>
+        <strong>Ejemplo Renders Props</strong>
+      </h3>
+    </header>
+  );
+};
+const boxStyles = {
+  margin: "0.5em",
+  borderRadius: "0.3em",
+  border: "1px solid gray",
+  padding: "0.5em",
+  textAlign: "center",
+};
+
+class Resize extends Component {
+  static propTypes = {
+    render: this.propTypes.func.isRequired,
+  };
+  state = {
+    width: window.innerWidth,
+    height: window.innerHeight,
+  };
+
+  componentDidMount() {
+    window.addEventListener("resize", this.handleResize);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.handleResize);
+  }
+
+  handleResize = () => {
+    this.setState({
+      width: window.innerWidth,
+      height: window.innerHeight,
+    });
+  };
+
+  render() {
+    const { width, height } = this.state;
+    const { render } = this.props;
+
+    return render({ width, height });
+  }
+}
+
+class App extends Component {
+  state = {};
+
+  render() {
+    return (
+      <div style={boxStyles}>
+        <Header />
+        <Resize
+          render={({ width, height }) => {
+            return (
+              <div>
+                <h1> Width: {data.width}</h1>
+                <li>{height}</li>
+              </div>
+            );
+          }}
+        />
+      </div>
+    );
+  }
+}
+
+export default App;
+```
+###Patrón HOC "High Order Component" (Hijo ←→ Padre).
+```
+import React, { Component } from "react";
+
+const Header = () => {
+  return (
+    <header>
+      <div>
+        <p>( Hijo a Padre )</p>
+      </div>
+      <h3>
+        <strong>HOC High Order Component</strong>
+      </h3>
+    </header>
+  );
+};
+const boxStyles = {
+  margin: "0.5em",
+  borderRadius: "0.3em",
+  border: "1px solid gray",
+  padding: "0.5em",
+  textAlign: "center",
+};
+
+const withCounter = (Comp) => {
+  return class extends Component {
+    state = {
+      num: 0,
+    };
+
+    add = () => {
+      this.setState((state) => ({ num: state.num + 1 }));
+    };
+
+    render() {
+      return <Comp num={this.state.num} add={this.add} />;
+    }
+  };
+};
+
+class App extends Component {
+  render() {
+    const { num, add } = this.props;
+    console.log(this.props);
+    return (
+      <div style={boxStyles}>
+        <Header />
+        <h1>{ num }</h1>
+        <button onClick={ add }>ADD</button>
+      </div>
+    );
+  }
+}
+
+export default withCounter(App);
+```
+###Ejemplo HOC con opciones de configuración.
+```
+import React, { Component } from "react";
+
+const Header = () => {
+  return (
+    <header>
+      <div>
+        <p>( Hijo a Padre )</p>
+      </div>
+      <h3>
+        <strong>HOC High Order Component</strong>
+      </h3>
+    </header>
+  );
+};
+const boxStyles = {
+  margin: "0.5em",
+  borderRadius: "0.3em",
+  border: "1px solid gray",
+  padding: "0.5em",
+  textAlign: "center",
+};
+
+const withCounter = (Comp) => {
+  return (config) => class extends Component {
+    state = {
+      num: config.clicks,
+    };
+
+    add = () => {
+      this.setState((state) => ({ num: state.num + config.sumClicks }));
+    };
+
+    render() {
+      return <Comp num={this.state.num} add={this.add} />;
+    }
+  };
+};
+
+class App extends Component {
+  render() {
+    const { num, add } = this.props;
+    console.log(this.props);
+    return (
+      <div style={boxStyles}>
+        <Header />
+        <h1>{num}</h1>
+        <button onClick={add}>ADD</button>
+      </div>
+    );
+  }
+}
+
+export default withCounter(App)({
+  clicks: 5,
+  sumClicks: 3,
+});
+```
+### Ejempo HOC (withSizes).
+```
+import React, { Component } from "react";
+
+const Header = () => {
+  return (
+    <header>
+      <div>
+        <p>( Hijo a Padre )</p>
+      </div>
+      <h3>
+        <strong>HOC High Order Component</strong>
+      </h3>
+    </header>
+  );
+};
+const boxStyles = {
+  margin: "0.5em",
+  borderRadius: "0.3em",
+  border: "1px solid gray",
+  padding: "0.5em",
+  textAlign: "center",
+};
+
+const withSizes = (Comp) =>
+  class extends Component {
+    state = {
+      width: window.innerWidth,
+      height: window.innerHeight,
+    };
+
+    componentDidMount() {
+      window.addEventListener("resize", this.handleResize);
+    }
+
+    componentWillUnmount() {
+      window.removeEventListener("resize", this.handleResize);
+    }
+
+    handleResize = () => {
+      this.setState({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
+
+    render() {
+      const { width, height } = this.state;
+
+      return <Comp width={width} height={height} />;
+    }
+  };
+
+class App extends Component {
+  render() {
+    const { width, height } = this.props;
+    return (
+      <div style={boxStyles}>
+        <Header />
+        <h1>
+          {width} - {height}
+        </h1>
+      </div>
+    );
+  }
+}
+
+export default withSizes(App);
+```
+###Hooks useState.
+```
+import React, { Component, useState } from "react";
+
+const Header = () => {
+  return (
+    <header>
+      <div>Hook useState</div>
+    </header>
+  );
+};
+const boxStyles = {
+  margin: "0.5em",
+  borderRadius: "0.3em",
+  border: "1px solid gray",
+  padding: "0.5em",
+  textAlign: "center",
+};
+
+const App = () => {
+  const [clicks, setClicks] = useState(0);
+
+  const addClicks = () => {
+    setClicks(clicks + 1);
+  };
+
+  return (
+    <div>
+      <Header />
+      <button onClick={addClicks}>Clicks ({clicks})</button>
+    </div>
+  );
+};
+
+export default App;
+```
+###Ejemplo de Hook useState con booleans
+```
+import React, { useState } from "react";
+
+const Header = () => {
+  return (
+    <header>
+      <div>Hook useState</div>
+    </header>
+  );
+};
+
+const App = () => {
+  const [isActive, setIsActive] = useState(false);
+
+  const toggle = () => {
+    setIsActive(!isActive);
+  };
+
+  return (
+    <div>
+      {isActive && <Header />}
+      <button onClick={toggle}>{isActive ? "Desactive" : "Active"}</button>
+    </div>
+  );
+};
+
+export default App;
+```
+###Ejemplo de Hook useState con objetos.
+```
+import React, { useState } from "react";
+
+const Header = () => {
+  return (
+    <header>
+      <div>Hook useState</div>
+    </header>
+  );
+};
+
+const App = () => {
+  const [clicks, setClicks] = useState(188);
+  const [title, setTitle] = useState("Hooks useState");
+
+  const addClicks = () => {
+    setClicks(clicks + 1);
+  };
+
+  const handleInput = (e) => {
+    const title = e.target.value;
+    setTitle(title);
+  };
+
+  return (
+    <div>
+      <Header />
+      <input type="text" onChange={handleInput} value={title} />
+      <button onClick={addClicks}>Clicks ({clicks})</button>
+      <h3> {title}</h3>
+    </div>
+  );
+};
+
+export default App;
+```
