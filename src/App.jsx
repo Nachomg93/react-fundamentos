@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useLayoutEffect } from "react";
+import React, { useState, useContext } from "react";
 import "./App.css";
 
 const Header = () => {
@@ -9,36 +9,59 @@ const Header = () => {
   );
 };
 
+//Tiene dos objetos: {Provider, Consumer}
+//Se utiliza Provider.Context o Provider.Consumer.
+const MyContext = React.createContext();
+
+//Consumir context de forma tradicional.
+// const Nieto = () => (
+//   <MyContext.Consumer>
+//     {(context) => (
+//       <div>
+//         <p>Nieto {context.clicks}</p>
+//         <button onClick={context.add}>Nieto Dispara</button>
+//       </div>
+//     )}
+//   </MyContext.Consumer>
+// );
+
+//ESTA MANERA ES MAS CORRECTA Y MAS LIMPIA.
+const Nieto = () => {
+  const { clicks, add } = useContext(MyContext)
+  return (
+    <div>
+      <p>Nieto {clicks}</p>
+      <button onClick={add}>Nieto Dispara</button>
+    </div>
+  );
+};
+
+const Hijo = () => (
+  <div>
+    <p>Hijo</p>
+    <Nieto />
+  </div>
+);
+
 const App = () => {
   const [clicks, setClicks] = useState(0);
   const add = () => setClicks(clicks + 1);
 
-  useEffect(() => {
-    console.log("useEffect 1");
-  }, [clicks]);
-
-  useEffect(() => {
-    console.log("useEffect 2");
-  }, [clicks]);
-
-  //useEffect => Es asincrono(Este pasa a la cola de la llamada).
-  //useEFfect => Se ejecuta despues de que se actualiza el DOM.
-  //useLayoutEffect => Se ejecuta antes de la actualizacion del DOM.
-  //useLayoutEffect => Es sincrono(Se ejecuta antes).
-
-  useLayoutEffect(() => {
-    console.log("useLayoutEffect 1");
-  }, [clicks]);
-
-  useLayoutEffect(() => {
-    console.log("useLayoutEffect 2");
-  }, [clicks]);
-
   return (
-    <div className="container-center">
-      <Header />
-      <button onClick={add}>Clicks ({clicks})</button>
-    </div>
+    <MyContext.Provider
+      value={{
+        clicks,
+        add,
+      }}
+    >
+      <div className="container-center">
+        <Header />
+        <button onClick={add} className="dBlue">
+          Clicks ({clicks})
+        </button>
+        <Hijo />
+      </div>
+    </MyContext.Provider>
   );
 };
 
