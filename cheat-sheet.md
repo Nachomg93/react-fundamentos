@@ -2723,3 +2723,222 @@ const App = () => {
 
 export default App;
 ```
+###Hook useEffect.
+```
+import React, { useState, useEffect } from "react";
+import "./App.css";
+
+const Header = () => {
+  return (
+    <header>
+      <div className="container">Hook useEffect</div>
+    </header>
+  );
+};
+
+const App = () => {
+  const [clicks, setClicks] = useState(0);
+
+  useEffect(() => {
+    console.log("Dentro de useEffect", clicks);
+    console.log('%c----------------------------', 'color: green');
+
+    return () => {
+      console.log("Dentro de useEffect - return", clicks);
+    }
+  });
+
+  const add = () => {
+    setClicks(clicks + 1);
+  };
+
+  return (
+    <div className="container-center">
+      <Header />
+      <button onClick={add}>Clicks ({clicks})</button>
+    </div>
+  );
+};
+
+export default App;
+```
+###Ejemplos de use con useEffect.
+```
+import React, { useState, useEffect } from "react";
+import "./App.css";
+
+const Header = () => {
+  return (
+    <header>
+      <div className="container">Hook useEffect</div>
+    </header>
+  );
+};
+
+const App = () => {
+  const [mouseX, setMouseX] = useState(0);
+  const [mouseY, setMouseY] = useState(0);
+
+  const handleMove = (e) => {
+    setMouseX(e.clientX);
+    setMouseY(e.clientY);
+  };
+
+  useEffect(() => {
+    window.addEventListener("mousemove", handleMove);
+
+    return () => {
+      window.removeEventListener("mousemove", handleMove);
+    }
+  });
+  return (
+    <div className="container-center">
+      <Header />
+      <h1>
+        X: {mouseX} Y: {mouseY}
+      </h1>
+    </div>
+  );
+};
+
+export default App;
+```
+###Controlar la ejecución de useEffect().
+```
+import React, { useState, useEffect } from "react";
+import "./App.css";
+
+const Header = () => {
+  return (
+    <header>
+      <div className="container">Hook useEffect</div>
+    </header>
+  );
+};
+
+const App = () => {
+  const [num, setNum] = useState(0);
+  const [emoji, setEmoji] = useState("😀");
+
+  const addNum = () => {
+    setNum(num + 1);
+  };
+
+  const toggleEmoji = () => {
+    const nextEmoji = emoji === "😀" ? "👻" : "😀";
+    setEmoji(nextEmoji);
+  };
+
+  useEffect(() => {
+    alert("useEffect 👻");
+  },[num]);
+
+  return (
+    <div className="container-center">
+      <Header />
+      <button onClick={addNum}>
+        ADD <span>({num})</span>
+      </button>
+      <button onClick={toggleEmoji}>Alternar Emoji</button>
+      <h1>{emoji}</h1>
+    </div>
+  );
+};
+
+export default App;
+```
+###Ejemplo de solicitud HTTP con hook useEffect().
+```
+import React, { useState, useEffect } from "react";
+import "./App.css";
+
+const Header = () => {
+  return (
+    <header>
+      <div className="container">Hook useEffect</div>
+    </header>
+  );
+};
+
+const App = () => {
+  const [users, setUsers] = useState([]);
+  const [isFetching, setIsFetching] = useState(true);
+
+  useEffect(() => {
+    fetch("https://jsonplaceholder.typicode.com/users")
+    //Fetch nos devuelve una promesa, y le pasamos el json para parcearla
+      .then((response) => response.json())
+      .then(users => {
+        setUsers(users)
+        setIsFetching(false);
+      });
+    //Se ejecuta en este caso solo una vez, ya que en la dependencia le hemos pasaso el [].
+  }, []);
+
+  return (
+    <div className="container-center">
+      <Header />
+      {isFetching && <h1>Cargando...</h1>}
+      <lu>
+        {users.map((user) => (
+          <li key={user.id}>{user.name}</li>
+        ))}
+      </lu>
+    </div>
+  );
+};
+
+export default App;
+```
+###Entendiendo el Hook useLayoutEffect().
+```
+import React, { useState, useEffect, useLayoutEffect } from "react";
+import "./App.css";
+
+const Header = () => {
+  return (
+    <header>
+      <div className="container">Hooks!!!</div>
+    </header>
+  );
+};
+
+const App = () => {
+  const [clicks, setClicks] = useState(0);
+  const add = () => setClicks(clicks + 1);
+
+  useEffect(() => {
+    console.log("useEffect 1");
+  }, [clicks]);
+
+  useEffect(() => {
+    console.log("useEffect 2");
+  }, [clicks]);
+
+  //useEffect => Es asincrono(Este pasa a la cola de la llamada).
+  //useEFfect => Se ejecuta despues de que se actualiza el DOM.
+  //useLayoutEffect => Se ejecuta antes de la actualizacion del DOM.
+  //useLayoutEffect => Es sincrono(Se ejecuta antes).
+
+  useLayoutEffect(() => {
+    console.log("useLayoutEffect 1");
+  }, [clicks]);
+
+  useLayoutEffect(() => {
+    console.log("useLayoutEffect 2");
+  }, [clicks]);
+
+  return (
+    <div className="container-center">
+      <Header />
+      <button onClick={add}>Clicks ({clicks})</button>
+    </div>
+  );
+};
+
+export default App;
+```
+###Entendiendo el Hook useContext().
+```
+
+```
