@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import "./App.css";
 
 const Header = () => {
@@ -9,59 +9,47 @@ const Header = () => {
   );
 };
 
-//Tiene dos objetos: {Provider, Consumer}
-//Se utiliza Provider.Context o Provider.Consumer.
-const MyContext = React.createContext();
+const useFetch = (url, initialState = []) => {
+  const [data, setData] = useState([]);
+  const [isFetching, setFetching] = useState(true);
 
-//Consumir context de forma tradicional.
-// const Nieto = () => (
-//   <MyContext.Consumer>
-//     {(context) => (
-//       <div>
-//         <p>Nieto {context.clicks}</p>
-//         <button onClick={context.add}>Nieto Dispara</button>
-//       </div>
-//     )}
-//   </MyContext.Consumer>
-// );
+  useEffect(() => {
+    setFetching(true)
+    fetch(url)
+      .then((res) => res.json())
+      .then((data) => {
+        setData(data)
+        setFetching(false);
+      });
+  }, [url]);
 
-//ESTA MANERA ES MAS CORRECTA Y MAS LIMPIA.
-const Nieto = () => {
-  const { clicks, add } = useContext(MyContext)
-  return (
-    <div>
-      <p>Nieto {clicks}</p>
-      <button onClick={add}>Nieto Dispara</button>
-    </div>
-  );
+  return [data, isFetching];
 };
 
-const Hijo = () => (
-  <div>
-    <p>Hijo</p>
-    <Nieto />
-  </div>
-);
-
 const App = () => {
-  const [clicks, setClicks] = useState(0);
-  const add = () => setClicks(clicks + 1);
+  const [clicks, setClicks] = useState(1);
+  const [user, isFetching] = useFetch('https://jsonplaceholder.typicode.com/users/'+ clicks, {})
 
+  const añadir = () => {
+    setClicks(clicks + 1)
+  }
   return (
-    <MyContext.Provider
-      value={{
-        clicks,
-        add,
-      }}
-    >
-      <div className="container-center">
-        <Header />
-        <button onClick={add} className="dBlue">
-          Clicks ({clicks})
-        </button>
-        <Hijo />
-      </div>
-    </MyContext.Provider>
+    <div className="container-center">
+      <Header />
+      {isFetching && <h1>Loading...</h1>}
+    <h1>{user.name}</h1>
+    <p>{user.phone}</p>
+    <button onClick={añadir}>
+      Clicks ({clicks})
+    </button>
+      {/* <ul>
+        {users.map(user =>(
+          <li key={user.id}>
+            {user.name}
+          </li>
+        ))}
+      </ul> */}
+    </div>
   );
 };
 

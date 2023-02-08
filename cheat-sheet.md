@@ -2890,7 +2890,7 @@ const App = () => {
 
 export default App;
 ```
-###Entendiendo el Hook useLayoutEffect().
+###Hook useLayoutEffect().
 ```
 import React, { useState, useEffect, useLayoutEffect } from "react";
 import "./App.css";
@@ -2938,7 +2938,7 @@ const App = () => {
 
 export default App;
 ```
-###Entendiendo el Hook useContext().
+###Hook useContext().
 ```
 import React, { useState, useContext } from "react";
 import "./App.css";
@@ -3004,6 +3004,722 @@ const App = () => {
         <Hijo />
       </div>
     </MyContext.Provider>
+  );
+};
+
+export default App;
+```
+###Hook useRef().
+```
+import React, { useState, useRef } from "react";
+import "./App.css";
+
+const Header = () => {
+  return (
+    <header>
+      <div className="container">Hooks!!!</div>
+    </header>
+  );
+};
+
+const App = () => {
+  // const [clicks, setClicks] = useState(0);
+  // const add = () => setClicks(clicks + 1);
+  
+  const entrada =useRef()
+
+  //Current lo utilizamos para acceder al elemento.
+  const focus = () => entrada.current.focus()
+  const blur = () => entrada.current.blur()
+
+  return (
+    <div className="container-center">
+      <Header />
+      {/* <button onClick={add} className="dBlue">
+        Clicks ({clicks})
+      </button> */}
+      <input 
+        type="text"
+        placeholder="Ingresa tu texto"
+        ref={entrada}
+      />
+      <button onClick={focus}>
+        Focus
+      </button>
+      <button onClick={blur}>
+        Blur
+      </button>
+    </div>
+  );
+};
+
+export default App;
+```
+###Ejemplos con useState(), useEffect() y useRef().
+```
+import React, { useState, useRef, useEffect } from "react";
+import "./App.css";
+
+const Header = () => {
+  return (
+    <header>
+      <div className="container">Hooks!!!</div>
+    </header>
+  );
+};
+
+const App = () => {
+  const [name, setName] = useState("");
+
+  const [products, setProducts] = useState([]);
+
+  const handleInput = (e) => {
+    const name = e.target.value;
+    setName(name);
+  };
+
+  const entrada = useRef();
+
+  //Se produce este Effect cuando el componente es montado.
+  useEffect(() => {
+    setTimeout(() => {
+      if (name === entrada.current.value) {
+        // Solicitud FETCH
+        fetch(
+          "https://universidad-react-api-test.luxfenix.vercel.app/products?name=" +
+            name
+        )
+          .then((res) => res.json())
+          .then((data) => setProducts(data.products));
+      }
+    }, 600);
+    //Queremos que se dispare este efecto cuando la propiedad name se haya actualizado.
+  }, [name]);
+
+  return (
+    <div className="container-center">
+      <Header />
+      <input type="text" onChange={handleInput} ref={entrada} />
+
+      <ul>
+        {products.map((product) => (
+          <li key={product.id}>{product.name}</li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+export default App;
+```
+###Ejemplo aplicando hooks de terceros de NPM.
+```
+import React, { useState, useRef, useEffect } from "react";
+import { useDebounce } from "use-debounce";
+import "./App.css";
+
+const Header = () => {
+  return (
+    <header>
+      <div className="container">Hooks!!!</div>
+    </header>
+  );
+};
+
+const App = () => {
+  const [name, setName] = useState("");
+  const [products, setProducts] = useState([]);
+  const [search] = useDebounce(name, 1000);
+
+  const handleInput = (e) => {
+    const name = e.target.value;
+    setName(name);
+  };
+
+  //Se produce este Effect cuando el componente es montado.
+  useEffect(() => {
+    // Solicitud FETCH
+    fetch(
+      "https://universidad-react-api-test.luxfenix.vercel.app/products?name=" +
+        name
+    )
+      .then((res) => res.json())
+      .then((data) => setProducts(data.products));
+
+    //Queremos que se dispare este efecto cuando la propiedad name se haya actualizado.
+  }, [search]);
+
+  return (
+    <div className="container-center">
+      <Header />
+      <input type="text" onChange={handleInput} />
+      <ul>
+        {products.map((product) => (
+          <li key={product.id}>{product.name}</li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+export default App;
+```
+###Hook useReducer().
+```
+import React, { useState, useRef, useEffect, useReducer } from "react";
+import "./App.css";
+
+const Header = () => {
+  return (
+    <header>
+      <div className="container">Hooks!!!</div>
+    </header>
+  );
+};
+
+const App = () => {
+  //dispatch({ type: 'sumando', action: 'Lo que sea' })
+  const reducer = (state, action) => {
+    switch (action.type) {
+      case "SUMANDO":
+        return {
+          ...state,
+          count: state.count + 1,
+        };
+        break;
+      case "RESTANDO":
+        return {
+          ...state,
+          count: state.count - 1,
+        };
+
+      case "SET_INPUT":
+        return {
+          ...state,
+          input: action.input,
+        };
+      default:
+        return state;
+    }
+  };
+
+  const initialState = {
+    count: 0,
+    input: "Nacho",
+  };
+
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  const sumando = () => {
+    dispatch({ type: "SUMANDO" });
+  };
+
+  const restando = () => {
+    dispatch({ type: "RESTANDO" });
+  };
+
+  const handleInput = (e) => {
+    dispatch({ type: "SET_INPUT", input: e.target.value });
+  };
+
+  return (
+    <div className="container-center">
+      <Header />
+      <input type="text" onChange={handleInput} value={state.input} />
+      <button onClick={sumando}>Sumar</button>
+      <button onClick={restando}>Restar</button>
+      <h2>
+        {state.count} - {state.input}
+      </h2>
+    </div>
+  );
+};
+
+export default App;
+```
+###Hook useInperativeHanle().
+```
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useReducer,
+  useImperativeHandle,
+  forwardRef,
+} from "react";
+import "./App.css";
+
+const Header = () => {
+  return (
+    <header>
+      <div className="container">Hooks!!!</div>
+    </header>
+  );
+};
+
+const FancyInput = forwardRef((props, ref) => {
+  const [text, setTexto] = useState("***");
+  const entrada = useRef();
+
+  useImperativeHandle(ref, () => ({
+    dispatchAlert: () => {
+      alert("Hola");
+    },
+    setParragraph: (message) => {
+      setTexto(message);
+    },
+
+    focusInput: () => {
+      entrada.current.focus();
+    },
+  }));
+  return (
+    <div>
+      <p>{text}</p>
+      <input type="text" ref={entrada} />
+    </div>
+  );
+});
+
+const App = () => {
+  const fancyInput = useRef();
+
+  const handleClick = () => {
+    fancyInput.current.focusInput()
+  };
+
+  return (
+    <div className="container-center">
+      <Header />
+      <FancyInput ref={fancyInput} />
+      <button onClick={handleClick}>Disparar</button>
+    </div>
+  );
+};
+
+export default App;
+```
+###React.memo() para rendimiento.
+```
+import React, { useState } from "react";
+import "./App.css";
+
+const Header = () => {
+  return (
+    <header>
+      <div className="container">Hooks!!!</div>
+    </header>
+  );
+};
+
+//Tenemos que envolver el componente con React.memo para que cuando se renderize solo se actualize esto y no todos.
+const Counter = React.memo(({ count }) => {
+  console.log("%cRender <Counter />", "color:blue");
+
+  return <h1>{count}</h1>;
+});
+
+const Title = React.memo(({ text }) => {
+  console.log("%cRender <Title />", "color:orangered");
+
+  return <h1>{text}</h1>;
+});
+
+const App = () => {
+  const [count, setCount] = useState(0);
+  const [title, setTitle] = useState("Grande Nacho!");
+
+  const handleClick = () => {
+    setCount(count + 1);
+  };
+
+  const handleTitle = (e) => {
+    const title = e.target.value;
+    setTitle(title);
+  };
+
+  return (
+    <div className="container-center">
+      <Header />
+      <input type="text" onChange={handleTitle} />
+      <button onClick={handleClick}>Añadir</button>
+      <Counter count={count} />
+      <Title text={title} />
+    </div>
+  );
+};
+
+export default App;
+```
+###User React.memo() con diferenciacion manual.
+```
+import React, { useState } from "react";
+import "./App.css";
+
+const Header = () => {
+  return (
+    <header>
+      <div className="container">Hooks!!!</div>
+    </header>
+  );
+};
+
+//Tenemos que envolver el componente con React.memo para que cuando se renderize solo se actualize esto y no todos.
+const Counter = React.memo(({ count }) => {
+  console.log("%cRender <Counter />", "color:blue");
+
+  return <h1>{count}</h1>;
+});
+
+const Title = React.memo(({ text }) => {
+  console.log("%cRender <Title />", "color:orangered");
+
+  return <h1>{text}</h1>;
+});
+
+const TitleNested = React.memo(
+  ({ info }) => {
+    console.log("%cRender <TitleNested />", "color:purple");
+
+    return <h1>{info.text}</h1>;
+  },
+  //Creamos el algoritmo de diferenciacion.
+  (prevProps, nextProps) => {
+    //Si retorna true esta no se va a renderizar
+    //Si retorna false, si se va a renderizar
+    // // console.log(prevProps, nextProps);
+    return prevProps.info.text === nextProps.info.text;
+  }
+);
+
+const App = () => {
+  const [count, setCount] = useState(0);
+  const [title, setTitle] = useState("Grande Nacho!");
+
+  const handleClick = () => {
+    setCount(count + 1);
+  };
+
+  const handleTitle = (e) => {
+    const title = e.target.value;
+    setTitle(title);
+  };
+
+  return (
+    <div className="container-center">
+      <Header />
+      <input type="text" onChange={handleTitle} />
+      <button onClick={handleClick}>Añadir</button>
+      <Counter count={count} />
+      <Title text={title} />
+      <TitleNested
+        info={{
+          text: title,
+        }}
+      />
+    </div>
+  );
+};
+
+export default App;
+```
+###Hooks useCallback().
+```
+import React, { useState, useCallback } from "react";
+import "./App.css";
+
+const Header = () => {
+  return (
+    <header>
+      <div className="container">Hooks!!!</div>
+    </header>
+  );
+};
+
+//REACT MEMO Y USECALLBACK NOS AYUDA A EVITAR EL RENDERIZADO QUE NO SE VAYAN A REQUERIR DENTRO
+//DE LOS COMPONENTES CUANDO LAS PROPS DE LOS COMPONENTES NO HANYAN CAMBIADO.
+const getRandomColor = () => "#" + Math.random().toString(16).slice(2, 8);
+
+const Button = React.memo(({ callback, children }) => {
+  const styles = {
+    padding: "1em",
+    fontSize: "20px",
+    background: getRandomColor(),
+  };
+  return (
+    <button style={styles} onClick={callback}>
+      {children}
+    </button>
+  );
+});
+
+const App = () => {
+  const [a, setA] = useState(0);
+
+  const incrementA = useCallback(() => {
+    setA((a) => a + 1);
+  }, []);
+  return (
+    <div className="container-center">
+      <Header />
+      <Button callback={incrementA}>Increment A</Button>
+      <h1>A: {a}</h1>
+    </div>
+  );
+};
+
+export default App;
+```
+###Hook useCallback con dependencias.
+```
+import React, { useState, useCallback } from "react";
+import "./App.css";
+
+const Header = () => {
+  return (
+    <header>
+      <div className="container">Hooks!!!</div>
+    </header>
+  );
+};
+
+const getRandomColor = () => "#" + Math.random().toString(16).slice(2, 8);
+
+const Button = React.memo(({ callback, children }) => {
+  const styles = {
+    padding: "1em",
+    fontSize: "20px",
+    background: getRandomColor(),
+  };
+  return (
+    <button style={styles} onClick={callback}>
+      {children}
+    </button>
+  );
+});
+
+const App = () => {
+  const [a, setA] = useState(0);
+  const [b, setB] = useState(0);
+
+  const incrementA = useCallback(() => {
+    setA((a) => a + 1);
+  }, []);
+
+  //EL HOOK USECALLBACK ALMACENA EN MEMORIA ESTE CALLBACK Y EN CUANTO SE GUARDA
+  //LA PROPIEDAD A VALE 0 Y 0 + 0 EN CERO Y NO ESTAMOS OBTENIENDO EL RESULT DESEADO.
+  const incrementB = useCallback(() => {
+    setB((b) => b + a);
+  }, [ a ]);
+
+  return (
+    <div className="container-center">
+      <Header />
+      <Button callback={incrementA}>Increment A</Button>
+      <Button callback={incrementB}>Increment B</Button>
+      <h1>
+        A: {a} - B: {b}
+      </h1>
+    </div>
+  );
+};
+
+export default App;
+```
+###Hook useMemo para mejorar el renderizado.
+```
+import React, { useState, useMemo } from "react";
+import "./App.css";
+
+const Header = () => {
+  return (
+    <header>
+      <div className="container">Hooks!!!</div>
+    </header>
+  );
+};
+
+const SuperList = ({ list, log }) => {
+  console.log("%cRender <SuperList />" + log, "color: green");
+  return (
+    <ul>
+      {list.map((item) => (
+        <li key={item}>{item}</li>
+      ))}
+    </ul>
+  );
+};
+const App = () => {
+  const [clicks, setClicks] = useState(0);
+
+  const increment = () => setClicks(clicks + 1);
+
+  //VAMOS A GUARDAR EL VALOR DEL COMPONENTE QUE VA A ESTAR MEMORIZADO EN LA MEMORIA.
+  //USEMEMO SE PUEDE UTILIZAR CUANDO RENDERIZAMOS LISTAS MUY GRANDES.
+  const memoList = useMemo(() => {
+    return <SuperList list={["Mustang", "GTO", "Dodge"]} log="Memorizado" />;
+  }, []);
+
+  return (
+    <div className="container-center">
+      <Header />
+      <button onClick={increment}>Clicks ({clicks})</button>
+      <SuperList list={["yamaha", "honda", "bmw", "kawa"]} log="Normal" />
+
+      {memoList}
+    </div>
+  );
+};
+
+export default App;
+```
+###Hooks personalizados.
+```
+import React, { useState, useMemo } from "react";
+import { useEffect } from "react";
+import "./App.css";
+
+const Header = () => {
+  return (
+    <header>
+      <div className="container">Hooks!!!</div>
+    </header>
+  );
+};
+
+const useSizes = () => {
+  const [width, setWidth] = useState(window.innerWidth);
+  const [height, setHeight] = useState(window.innerHeight);
+  const handleResize = () => {
+    setHeight(window.innerHeight);
+    setWidth(window.innerWidth);
+  };
+  useEffect(() => {
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  return { width, height };
+};
+const App = () => {
+  const { width, height } = useSizes();
+  return (
+    <div className="container-center">
+      <Header />
+
+      <h1>
+        Width: { width }px Height: { height }
+      </h1>
+    </div>
+  );
+};
+
+export default App;
+```
+###Hook personalizados para hacer solicitudes HTTP.
+```
+import React, { useState, useMemo, useEffect } from "react";
+import "./App.css";
+
+const Header = () => {
+  return (
+    <header>
+      <div className="container">Hooks!!!</div>
+    </header>
+  );
+};
+
+const useFetch = (url) => {
+  const [data, setData] = useState([]);
+  const [isFetching, setFetching] = useState(true);
+
+  useEffect(() => {
+    fetch(url)
+      .then((res) => res.json())
+      .then((data) => {
+        setData(data)
+        setFetching(false);
+      });
+  }, [url]);
+
+  return [data, isFetching];
+};
+
+const App = () => {
+  const [users, isFetching] = useFetch('https://jsonplaceholder.typicode.com/users')
+  return (
+    <div className="container-center">
+      <Header />
+      {isFetching && <h1>Loading...</h1>}
+      <ul>
+        {users.map(user =>(
+          <li key={user.id}>
+            {user.name}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+export default App;
+```
+###Hook personalizados para hacer solicitudes HTTP 2.
+```
+import React, { useState, useMemo, useEffect } from "react";
+import "./App.css";
+
+const Header = () => {
+  return (
+    <header>
+      <div className="container">Hooks!!!</div>
+    </header>
+  );
+};
+
+const useFetch = (url, initialState = []) => {
+  const [data, setData] = useState([]);
+  const [isFetching, setFetching] = useState(true);
+
+  useEffect(() => {
+    setFetching(true)
+    fetch(url)
+      .then((res) => res.json())
+      .then((data) => {
+        setData(data)
+        setFetching(false);
+      });
+  }, [url]);
+
+  return [data, isFetching];
+};
+
+const App = () => {
+  const [clicks, setClicks] = useState(1);
+  const [user, isFetching] = useFetch('https://jsonplaceholder.typicode.com/users/'+ clicks, {})
+
+  const añadir = () => {
+    setClicks(clicks + 1)
+  }
+  return (
+    <div className="container-center">
+      <Header />
+      {isFetching && <h1>Loading...</h1>}
+    <h1>{user.name}</h1>
+    <p>{user.phone}</p>
+    <button onClick={añadir}>
+      Clicks ({clicks})
+    </button>
+      {/* <ul>
+        {users.map(user =>(
+          <li key={user.id}>
+            {user.name}
+          </li>
+        ))}
+      </ul> */}
+    </div>
   );
 };
 
