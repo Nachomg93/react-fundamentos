@@ -22,12 +22,7 @@ const App = () => {
     <BrowserRouter>
       <Routes>
         <Route path="/hola" element={<Hola />} />
-        <section>
-          <Route path="/productos" element={<Productos />} />
-        </section>
-        <div>
-          <Route path="/productos" element={<Productos />} />
-        </div>
+        <Route path="/productos" element={<Productos />} />
       </Routes>
     </BrowserRouter>
   );
