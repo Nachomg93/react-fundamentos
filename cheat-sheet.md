@@ -3725,3 +3725,206 @@ const App = () => {
 
 export default App;
 ```
+###Entendiendo la prop children en profundidad.
+```
+import React, { useState, useMemo, useEffect, Component } from "react";
+import "./App.css";
+import "./Global.css";
+
+const Header = () => {
+  return (
+    <header>
+      <div className="container">Hooks!!!</div>
+    </header>
+  );
+};
+
+// const Parent = ({ children }) => {
+//   return (
+//     <div className="box">
+//       <div className="box blue">{children}</div>
+//       <div className="box red">{children}</div>
+//     </div>
+//   );
+// };
+
+class Parent extends Component {
+  render() {
+    const { children } = this.props;
+    console.log(children);
+    return (
+      <div className="box">
+        <div className="box blue">
+          {/* {children} */}
+        </div>
+        <div className="box red">
+          {/* {children} */}
+        </div>
+      </div>
+    );
+  }
+}
+
+class App extends Component {
+  render() {
+    return (
+      <div>
+        <Parent>
+          Hijo de texto
+          <div>Elemento Contenedor</div>
+          {()=> {}}
+          {777}
+          otro texto
+          {`La sumas es : ${2 + 7}`}
+        </Parent>
+      </div>
+    );
+  }
+}
+
+export default App;
+```
+###Children con las utilidades de React.Children.
+```
+import React, { useState, useMemo, useEffect, Component } from "react";
+import "./App.css";
+import "./Global.css";
+
+const Header = () => {
+  return (
+    <header>
+      <div className="container">Hooks!!!</div>
+    </header>
+  );
+};
+
+class Parent extends Component {
+  render() {
+    const { children: ch } = this.props;
+    const childrenArray = React.Children.toArray(ch)
+
+    //SOLO FILTRA LOS CHILDREN QUE PUEDE RENDERIZAR.
+    const children = childrenArray.map((child, index)=> (
+      <li key={index}>
+        {child}
+      </li>
+    ))
+
+    return (
+      <div className="box">
+        <div className="box blue">{children}</div>
+        <div className="box red">{/* {children} */}</div>
+      </div>
+    );
+  }
+}
+
+//ES VALIDO PASAR FUNCIONES A LOS CHILDREN PERO NO ES VALIDO
+//TRATAR DE RENDERIZAR UNA FUNCION.
+class App extends Component {
+  render() {
+    return (
+      <div>
+        <Parent>
+          <span>Yamaha</span>
+      
+        </Parent>
+      </div>
+    );
+  }
+}
+
+export default App;
+```
+###Workshop de composicion esplicita con React Children.
+```
+import React, { useState, useMemo, useEffect, Component } from "react";
+import "./App.css";
+import { Button, Counter, Title } from "./components/Counter";
+
+const Header = () => {
+  return (
+    <header>
+      <div className="container">React Children!</div>
+    </header>
+  );
+};
+
+const App = () => (
+  <div>
+    <Header />
+    <Counter>
+      <Title />
+      <Title>
+        {(click) => (
+          <div>
+          <h1>{click}</h1>
+          </div>
+        )}
+      </Title>
+      <Button type='decrement' />
+      <Button type='increment' />
+    </Counter>
+  </div>
+);
+export default App;
+```
+```
+import React, { useState } from "react";
+
+export const Button = ({ type, onIncrement, onDecrement }) => {
+  const action = () => {
+    return type === "increment" ? onIncrement() : onDecrement();
+  };
+  return (
+    <button onClick={action}>
+      {type === "increment" ? "Agregar" : "Quitar"}
+    </button>
+  );
+};
+
+export const Title = ({ clicks, children }) => {
+  return typeof children === "function" ? (
+    children(clicks)
+  ) : (
+    <span>{clicks}</span>
+  );
+};
+
+export const Counter = ({ children }) => {
+  const [clicks, setClicks] = useState(0);
+
+  const increment = () => setClicks(clicks + 1);
+  const decrement = () => setClicks(clicks - 1);
+
+  if (!children) {
+    const styles = {
+      background: "#CC6040",
+      borderRadius: ".3em",
+      padding: ".3em 1em",
+      color: "#FFF",
+    };
+    return (
+      <div style={styles}>
+        Wops! debes agregar componentes como {"<Button />"}
+      </div>
+    );
+  }
+  const _children = React.Children.map(children, (child) => {
+    console.log(child);
+    let props = {};
+
+    if (child.type === Title) {
+      props.clicks = clicks;
+    }
+
+    if (child.type === Button) {
+      props.onIncrement = increment;
+      props.onDecrement = decrement;
+    }
+    return React.cloneElement(child, props);
+  });
+
+  return _children;
+};
+```
