@@ -3928,3 +3928,102 @@ export const Counter = ({ children }) => {
   return _children;
 };
 ```
+###Ejemplo React.lazy y React.Suspense.
+```
+import React, { useState, lazy, Suspense } from "react";
+import "./App.css";
+import { MoonLoader } from 'react-spinners'
+
+// import Image from "./components/Image";
+
+const Header = () => {
+  return (
+    <header>
+      <div className="container">React Children!</div>
+    </header>
+  );
+};
+
+//Code Splitting - Importacion dinamica
+const Image = lazy(() => import("./components/Image"));
+
+const App = () => {
+  const [show, setShow] = useState(false);
+  const toggle = () => setShow(!show);
+
+  const styles = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent:'center',
+    flexDirection: 'column'
+  }
+
+  return (
+    <div style={styles}>
+      <button onClick={toggle}>{show ? "Ocultar" : "Mostrar"}</button>
+      {show && (
+        <Suspense fallback={<MoonLoader />}>
+          <Image />
+        </Suspense>
+      )}
+    </div>
+  );
+};
+export default App;
+
+```
+```
+import React from "react";
+import './Image.css'
+
+const Image = () => {
+
+    
+    return (
+      <div className='show'>
+        <img src="https://images.pexels.com/photos/7465050/pexels-photo-7465050.jpeg" alt="Imagen" width='100%'
+        />
+      </div>
+    )
+  }
+
+  export default Image;
+```
+###Instalacion de react router y montando primeras rutas.
+```
+import React, { useState, lazy, Suspense } from "react";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+
+const Header = () => {
+  return (
+    <header>
+      <div className="container">React Router!</div>
+    </header>
+  );
+};
+
+const Hola = () => {
+  return <h1>Hola</h1>;
+};
+
+const Productos = () => {
+  return <h1>Productos</h1>;
+};
+
+const App = () => {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/hola" element={<Hola />} />
+        <section>
+          <Route path="/productos" element={<Productos />} />
+        </section>
+        <div>
+          <Route path="/productos" element={<Productos />} />
+        </div>
+      </Routes>
+    </BrowserRouter>
+  );
+};
+export default App;
+```
